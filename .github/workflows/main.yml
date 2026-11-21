@@ -31,6 +31,14 @@ jobs:
       - name: Build
         run: gradle build --no-daemon
 
+      - name: Verificar conteúdo do jar
+        run: |
+          jar=$(ls build/libs/*.jar | head -n1)
+          echo "Jar: $jar"
+          unzip -l "$jar"
+          unzip -l "$jar" | grep -q "META-INF/neoforge.mods.toml" || { echo "ERRO: falta META-INF/neoforge.mods.toml no jar"; exit 1; }
+          unzip -l "$jar" | grep -q "com/pocketring/PocketRing.class" || { echo "ERRO: falta PocketRing.class no jar"; exit 1; }
+
       - name: Enviar .jar como artefato
         uses: actions/upload-artifact@v4
         with:
